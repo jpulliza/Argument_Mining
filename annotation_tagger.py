@@ -33,7 +33,3 @@ def mark_expert_callouts(underlying_file, annotators):
     error_file = codecs.open(data_path + "/output/" + underlying_file + '_errors.txt', 'w', 'utf-8')
 
     error_file.writelines(errors)
-
-
-for underlying_file in underlying_files:
-    mark_expert_annotations(underlying_file, annotators)

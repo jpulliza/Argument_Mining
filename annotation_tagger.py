@@ -7,7 +7,7 @@ annotators = ['A1', 'A2', 'A3', 'A4', 'A5']
 data_path = 'C:/Users/Jonathan/SkyDrive/Rutgers/Spring 2018/Independent Study/Argument Mining/Data'
 
 
-def mark_expert_annotations(underlying_file, annotators):
+def mark_expert_callouts(underlying_file, annotators):
     original_text_file = data_path + "/original/" + underlying_file + ".orig.txt"
     df = pd.read_csv(data_path + "/expert_annotated/" + underlying_file+'.ea.txt', sep='\t', error_bad_lines=False)
     original_text = open(original_text_file, encoding="utf8").read()

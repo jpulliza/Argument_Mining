@@ -33,3 +33,66 @@ def mark_expert_callouts(underlying_file, annotators):
     error_file = codecs.open(data_path + "/output/" + underlying_file + '_errors.txt', 'w', 'utf-8')
 
     error_file.writelines(errors)
+
+
+def mark_ranges(annotation, text, text_dict):
+    start_index = text.index(annotation)
+    end_index = start_index + len(annotation)
+    for x in range(start_index, end_index):
+        text_dict[x] = text_dict[x] + 1
+    return text_dict
+
+
+def output_annotation_count_string(text, text_dict):
+    count = 0
+    output_string = "<Count_0>"
+    for key, value in text_dict.items():
+        if count != value:
+            output_string = output_string + "</Count_{0}>".format(count)
+            count = value
+            output_string = output_string + "<Count_{0}>".format(count)
+            output_string = output_string + text[key]
+        else:
+            output_string = output_string + text[key]
+        if key == list(text_dict.keys())[-1]:
+            output_string = output_string + "</Count_{0}>".format(count)
+
+    return output_string
+
+
+def mark_expert_callouts_overlap(underlying_file, annotators):
+    original_text_file = data_path + "/original/" + underlying_file + ".orig.txt"
+    df = pd.read_csv(data_path + "/expert_annotated/" + underlying_file+'.ea.txt', sep='\t', error_bad_lines=False)
+    original_text = open(original_text_file, encoding="utf8").read()
+    clean_text = ' '.join(repr(original_text).replace('\\n\\n', ' <p> ').replace('\\n', ' ').split(sep=' '))
+    text_dict = dict.fromkeys(range(len(clean_text)), 0)
+    errors = []
+
+    for annotator in annotators:
+        filtered = df[df['Annotator Name'] == annotator]
+        for row in filtered.iterrows():
+            annotation = str(row[1]['Calling-out Spanned Text'])
+            callout_id = str(row[1]['Knowtator Calling-out ID'])
+            if annotation in clean_text:
+                if clean_text.count(annotation) == 1:
+                    text_dict = mark_ranges(annotation, clean_text, text_dict)
+                else:
+                    errors.append(annotator + '\t' + callout_id + '\t' + annotation + '\t' + 'Multiple Matches' + '\n')
+            else:
+                errors.append(annotator + '\t' + callout_id + '\t' + annotation + '\t' + 'No Match' + '\n')
+
+    ouput_string = output_annotation_count_string(clean_text, text_dict)
+
+    output_file = data_path + "/output/" + underlying_file + '_output_overlap.html'
+    g = codecs.open(output_file, 'w', 'utf-8')
+
+    g.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="styles.css"></head><body>'
+            + ouput_string + '</body></html>')
+
+    error_file = codecs.open(data_path + "/output/" + underlying_file + '_errors.txt', 'w', 'utf-8')
+
+    error_file.writelines(errors)
+
+
+for underlying_file in underlying_files:
+    mark_expert_callouts_overlap(underlying_file, annotators)

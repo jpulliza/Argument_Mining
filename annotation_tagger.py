@@ -1,5 +1,8 @@
 import codecs
 import pandas as pd
+from tinydb import TinyDB, Query
+
+db = TinyDB('db.json')
 
 underlying_files = ["android100", "ban100", "ipad100",
                     "layoffs100", "twitter100"]
@@ -94,5 +97,18 @@ def mark_expert_callouts_overlap(underlying_file, annotators):
     error_file.writelines(errors)
 
 
-for underlying_file in underlying_files:
-    mark_expert_callouts_overlap(underlying_file, annotators)
+def text_to_dictionary(text, source):
+    list_of_dictionaries = []
+    for order, term in enumerate(text.split(' ')):
+        d = {'order': order, 'term': term, 'sources': [source]}
+        list_of_dictionaries.append(d)
+    return list_of_dictionaries
+
+
+def expert_document_db(underlying_file):
+    original_text_file = data_path + "/original/" + underlying_file + ".orig.txt"
+    original_text = open(original_text_file, encoding="utf8").read()
+    clean_text = ' '.join(repr(original_text).replace('\\n\\n', ' <p> ').replace('\\n', ' ').split(sep=' '))
+    text_dictionary = text_to_dictionary(clean_text, underlying_file)
+    for text_dict in text_dictionary:
+        db.insert(text_dict)

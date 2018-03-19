@@ -1,6 +1,7 @@
 import codecs
 import pandas as pd
 from tinydb import TinyDB, Query
+import json
 
 db = TinyDB('db2.json')
 Word = Query()
@@ -181,4 +182,5 @@ word_index = {}
 for file in underlying_files:
     append_word_doc_index(file, clean_text(file), word_index)
 
-print(word_index)
+with open('back_of_book.json', 'w') as outfile:
+    json.dump(word_index, outfile)

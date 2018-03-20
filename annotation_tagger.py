@@ -1,10 +1,7 @@
 import codecs
 import pandas as pd
-from tinydb import TinyDB, Query
-import json
-
-db = TinyDB('db2.json')
-Word = Query()
+from dicttoxml import dicttoxml
+import xml.dom.minidom
 
 underlying_files = ["android100", "ban100", "ipad100",
                     "layoffs100", "twitter100"]
@@ -107,7 +104,7 @@ def text_to_dictionary(text, source):
     return list_of_dictionaries
 
 
-def expert_document_db(underlying_file):
+def expert_document_db(underlying_file, db):
     original_text_file = data_path + "/original/" + underlying_file + ".orig.txt"
     original_text = open(original_text_file, encoding="utf8").read()
     clean_text = ' '.join(repr(original_text).replace('\\n\\n', ' <p> ').replace('\\n', ' ').split(sep=' '))
@@ -154,7 +151,7 @@ def add_callout_ids(db, Word, underlying_file, annotators):
     error_file.writelines(errors)
 
 
-def clean_text(underlying_file):
+def clean_text_input(underlying_file):
     original_text_file = data_path + "/original/" + underlying_file + ".orig.txt"
     df = pd.read_csv(data_path + "/expert_annotated/" + underlying_file + '.ea.txt', sep='\t', error_bad_lines=False)
     original_text = open(original_text_file, encoding="utf8").read()
@@ -177,10 +174,35 @@ def append_word_doc_index(source, text, word_index):
                 word_index[word][source] = set(word_index[word][source] + occurrences)
 
 
-word_index = {}
+def make_word_index(word_index):
+    for file in underlying_files:
+        append_word_doc_index(file, clean_text_input(file), word_index)
 
-for file in underlying_files:
-    append_word_doc_index(file, clean_text(file), word_index)
 
-with open('back_of_book.json', 'w') as outfile:
-    json.dump(word_index, outfile)
+def print_sub_keys(word_index):
+    for word in word_index:
+        for doc in word_index.get(word):
+            print("{0} - {1} - {2}".format(word, doc, word_index.get(word).get(doc)))
+
+
+def dict_to_xml(dict):
+    xml_from_array = dicttoxml(dict, custom_root='words', attr_type=False)
+    output_xml = xml.dom.minidom.parseString(xml_from_array)
+    pretty_xml_as_string = output_xml.toprettyxml()
+    return pretty_xml_as_string
+
+
+def append_doc_index(underlying_file, doc_index):
+    original_text_file = data_path + "/original/" + underlying_file + ".orig.txt"
+    original_text = open(original_text_file, encoding="utf8").read()
+    clean_text = clean_text_input(underlying_file)
+    doc_index[underlying_file] = {}
+    doc_index[underlying_file]['original_text'] = original_text
+    doc_index[underlying_file]['clean_text'] = clean_text
+
+
+def make_doc_index(doc_index):
+    for file in underlying_files:
+        append_doc_index(file, doc_index)
+
+

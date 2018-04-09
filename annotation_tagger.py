@@ -3,8 +3,7 @@ import pandas as pd
 from dicttoxml import dicttoxml
 import xml.dom.minidom
 
-underlying_files = ["android100", "ban100", "ipad100",
-                    "layoffs100", "twitter100"]
+underlying_files = ["android100", "ban100", "ipad100", "layoffs100", "twitter100"]
 annotators = ['A1', 'A2', 'A3', 'A4', 'A5']
 data_path = 'C:/Users/Jonathan/SkyDrive/Rutgers/Spring 2018/Independent Study/Argument Mining/Data'
 

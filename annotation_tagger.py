@@ -1,7 +1,7 @@
 import codecs
 import pandas as pd
 
-underlying_files = ["android100", "ban100", "ipad100", "layoffs100", "twitter100"]
+base_names = ["android100", "ban100", "ipad100", "layoffs100", "twitter100"]
 annotators = ['A1', 'A2', 'A3', 'A4', 'A5']
 data_path = 'C:/Users/Jonathan/SkyDrive/Rutgers/Spring 2018/Independent Study/Argument Mining/Data'
 
@@ -15,8 +15,8 @@ def return_annotation_positions(annotation, text):
         return "ERROR", "ERROR"
 
 
-def clean_text_input(underlying_file):
-    original_text_file = data_path + "/original/" + underlying_file + ".orig.txt"
+def clean_text_input(base_name):
+    original_text_file = data_path + "/original/" + base_name + ".orig.txt"
     original_text = open(original_text_file, encoding="utf8").read()
     clean_text = ' '.join(repr(original_text).replace('\\n\\n', ' <p> ').replace('\\n', ' ').split(sep=' '))
     return clean_text
@@ -43,10 +43,10 @@ def append_tag_dictionary(tag_dictionary, start_position, end_position, annotato
         tag_dictionary[end_position] = end_tag
 
 
-def add_annotation_tags(underlying_file):
+def add_annotation_tags(base_name):
     tags = {}
-    clean_text = clean_text_input(underlying_file)
-    df = pd.read_csv(data_path + "/expert_annotated/" + underlying_file + '.ea.txt', sep='\t', error_bad_lines=False)
+    clean_text = clean_text_input(base_name)
+    df = pd.read_csv(data_path + "/expert_annotated/" + base_name + '.ea.txt', sep='\t', error_bad_lines=False)
     for row in df.iterrows():
         annotator_id = str(row[1]['Annotator Name'])
 
@@ -77,11 +77,11 @@ def add_annotation_tags(underlying_file):
     return tagged_text
 
 
-for underlying_file in underlying_files:
-    output_file = data_path + "/output/" + underlying_file + '_output_overlap.html'
+for base_name in base_names:
+    output_file = data_path + "/output/" + base_name + '_output_overlap.html'
     g = codecs.open(output_file, 'w', 'utf-8')
 
-    tagged_text = add_annotation_tags(underlying_file)
+    tagged_text = add_annotation_tags(base_name)
 
     g.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="styles.css"></head><body>'
             + tagged_text + '</body></html>')

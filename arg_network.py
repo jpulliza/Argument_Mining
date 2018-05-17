@@ -4,7 +4,7 @@ import math
 from annotation_tagger import return_annotation_positions, clean_text_input
 
 
-def html_network(got_data, html_file, show_buttons=True, annotator_filter=False):
+def html_network(got_data, html_file, label_dict, show_buttons=True, annotator_filter=False):
     got_net = Network(height="750px", width="100%", bgcolor="#222222", font_color="white", directed=True)
 
     sources = got_data['Source']
@@ -12,7 +12,7 @@ def html_network(got_data, html_file, show_buttons=True, annotator_filter=False)
     entities = set(sources.append(targets))
 
     for entity in entities:
-        got_net.add_node(entity, entity, title=entity)
+        got_net.add_node(entity, label=entity, title=str(label_dict[entity]))
 
     if annotator_filter:
         got_data = got_data[got_data['Annotator Name'] == annotator_filter]
@@ -113,6 +113,22 @@ annotations['Target'] = annotations['call_out_range'].map(range_dict)
 annotations['Source'] = annotations['target_range'].map(range_dict)
 annotations['Weight'] = 1
 
+label_dict = {}
+
+for node_num, label in zip(annotations['Target'], annotations['Calling-out Spanned Text']):
+    if node_num in label_dict.keys():
+        if len(str(label)) > len(str(label_dict[node_num])):
+            label_dict[node_num] = label
+    else:
+        label_dict[node_num] = label
+
+for node_num, label in zip(annotations['Source'], annotations['Target Spanned Text']):
+    if node_num in label_dict.keys():
+        if len(str(label)) > len(str(label_dict[node_num])):
+            label_dict[node_num] = label
+    else:
+        label_dict[node_num] = label
+
 for annotator in annotators:
     html_file = "{0}_blob_network.html".format(annotator)
-    html_network(annotations, html_file, annotator_filter=annotator)
+    html_network(annotations, html_file, annotator_filter=annotator, label_dict=label_dict)

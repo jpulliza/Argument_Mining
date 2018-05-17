@@ -7,11 +7,14 @@ data_path = 'C:/Users/Jonathan/SkyDrive/Rutgers/Spring 2018/Independent Study/Ar
 
 
 def return_annotation_positions(annotation, text):
-    if text.count(annotation) == 1:
-        start_index = text.index(annotation)
-        end_index = start_index + len(annotation)
-        return start_index, end_index
-    else:
+    try:
+        if text.count(annotation) == 1:
+            start_index = text.index(annotation)
+            end_index = start_index + len(annotation)
+            return start_index, end_index
+        else:
+            return "ERROR", "ERROR"
+    except:
         return "ERROR", "ERROR"
 
 

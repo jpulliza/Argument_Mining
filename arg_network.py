@@ -1,19 +1,25 @@
 from pyvis.network import Network
 import pandas as pd
 import math
+from annotation_tagger import return_annotation_positions, clean_text_input
 
 
-def html_network(got_data, html_file, show_buttons=True):
+def html_network(got_data, html_file, show_buttons=True, annotator_filter=False):
     got_net = Network(height="750px", width="100%", bgcolor="#222222", font_color="white", directed=True)
 
     sources = got_data['Source']
     targets = got_data['Target']
-    weights = got_data['Weight']
-
     entities = set(sources.append(targets))
 
     for entity in entities:
         got_net.add_node(entity, entity, title=entity)
+
+    if annotator_filter:
+        got_data = got_data[got_data['Annotator Name'] == annotator_filter]
+
+    sources = got_data['Source']
+    targets = got_data['Target']
+    weights = got_data['Weight']
 
     edge_data = zip(sources, targets, weights)
 
@@ -93,20 +99,33 @@ base_names = ["android100", "ban100", "ipad100", "layoffs100", "twitter100"]
 annotators = ['A1', 'A2', 'A3', 'A4', 'A5']
 data_path = 'C:/Users/Jonathan/SkyDrive/Rutgers/Spring 2018/Independent Study/Argument Mining/Data/expert_annotated/'
 
+clean_text = clean_text_input(base_names[0])
+
 annotation_file = data_path + base_names[0]+".ea.txt"
 
 annotations = pd.read_csv(annotation_file, sep='\t', error_bad_lines=False)
 
-annotations['call_out_range'] = list(zip(annotations['Calling-out Span Start'], annotations['Calling-out Span End']))
-annotations['target_range'] = list(zip(annotations['Target Span Start'], annotations['Target Span End']))
+annotation_to_range_dict = {}
 
-range_dict = exact_range_dict(annotations)
+for annotation in set(annotations['Calling-out Spanned Text'].append(annotations['Target Spanned Text'])):
+    positions = return_annotation_positions(annotation, clean_text)
+    if str(positions[0]).isdigit():
+        annotation_to_range_dict[annotation] = positions
+    else:
+        annotation_to_range_dict[annotation] = "ERROR"
+
+annotations['call_out_range'] = annotations['Calling-out Spanned Text'].map(annotation_to_range_dict)
+annotations['target_range'] = annotations['Target Spanned Text'].map(annotation_to_range_dict)
+
+annotations = annotations[annotations['call_out_range'] != "ERROR"]
+annotations = annotations[annotations['target_range'] != "ERROR"]
+
+range_dict = blob_range_dict(annotations)
 
 annotations['Target'] = annotations['call_out_range'].map(range_dict)
 annotations['Source'] = annotations['target_range'].map(range_dict)
 annotations['Weight'] = 1
 
 for annotator in annotators:
-    filtered_annotations = annotations[annotations['Annotator Name'] == annotator]
-    html_file = "{0}_exact_network.html".format(annotator)
-    html_network(filtered_annotations, html_file)
+    html_file = "{0}_blob_network.html".format(annotator)
+    html_network(annotations, html_file, annotator_filter=annotator)

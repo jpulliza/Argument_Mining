@@ -64,7 +64,6 @@ def blob_range_dict(df):
                 node_end = item_end
                 node_num += 1
             unique_nodes.append(node_num)
-            #print("Node: {0}, Start: {1}, End: {2}".format(node_num, node_start, node_end))
 
     range_dict = {}
 
@@ -117,8 +116,6 @@ clean_text = clean_text_input(base_names[0])
 annotation_file = data_path + base_names[0]+".ea.txt"
 
 annotations = pd.read_csv(annotation_file, sep='\t', error_bad_lines=False)
-
-
 
 '''
 

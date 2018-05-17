@@ -94,19 +94,6 @@ def exact_range_dict(df):
     return range_dict
 
 
-def clean_annotation_dict(df):
-    annotation_to_range_dict = {}
-
-    for annotation in set(df['Calling-out Spanned Text'].append(df['Target Spanned Text'])):
-        positions = return_annotation_positions(annotation, clean_text)
-        if str(positions[0]).isdigit():
-            annotation_to_range_dict[annotation] = positions
-        else:
-            annotation_to_range_dict[annotation] = "ERROR"
-
-    return annotation_to_range_dict
-
-
 base_names = ["android100", "ban100", "ipad100", "layoffs100", "twitter100"]
 annotators = ['A1', 'A2', 'A3', 'A4', 'A5']
 data_path = 'C:/Users/Jonathan/SkyDrive/Rutgers/Spring 2018/Independent Study/Argument Mining/Data/expert_annotated/'
@@ -117,17 +104,6 @@ annotation_file = data_path + base_names[0]+".ea.txt"
 
 annotations = pd.read_csv(annotation_file, sep='\t', error_bad_lines=False)
 
-'''
-
-annotation_to_range_dict = clean_annotation_dict(annotations)
-
-annotations['call_out_range'] = annotations['Calling-out Spanned Text'].map(annotation_to_range_dict)
-annotations['target_range'] = annotations['Target Spanned Text'].map(annotation_to_range_dict)
-
-annotations = annotations[annotations['call_out_range'] != "ERROR"]
-annotations = annotations[annotations['target_range'] != "ERROR"]
-
-'''
 annotations['call_out_range'] = list(zip(annotations['Calling-out Span Start'], annotations['Calling-out Span End']))
 annotations['target_range'] = list(zip(annotations['Target Span Start'], annotations['Target Span End']))
 

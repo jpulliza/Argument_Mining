@@ -1,7 +1,6 @@
 from pyvis.network import Network
 import pandas as pd
 import math
-from annotation_tagger import clean_text_input
 
 
 def html_network(got_data, html_file, label_dict, show_buttons=True, annotator_filter=False):
@@ -94,41 +93,41 @@ def exact_range_dict(df):
     return range_dict
 
 
+def export_annotation_network(base_name, data_path):
+    annotation_file = data_path + base_name+".ea.txt"
+
+    annotations = pd.read_csv(annotation_file, sep='\t', error_bad_lines=False)
+
+    annotations['call_out_range'] = list(zip(annotations['Calling-out Span Start'], annotations['Calling-out Span End']))
+    annotations['target_range'] = list(zip(annotations['Target Span Start'], annotations['Target Span End']))
+
+    range_dict = blob_range_dict(annotations)
+
+    annotations['Target'] = annotations['call_out_range'].map(range_dict)
+    annotations['Source'] = annotations['target_range'].map(range_dict)
+    annotations['Weight'] = 1
+
+    label_dict = {}
+
+    for node_num, label in zip(annotations['Target'], annotations['Calling-out Spanned Text']):
+        if node_num in label_dict.keys():
+            if len(str(label)) > len(str(label_dict[node_num])):
+                label_dict[node_num] = label
+        else:
+            label_dict[node_num] = label
+
+    for node_num, label in zip(annotations['Source'], annotations['Target Spanned Text']):
+        if node_num in label_dict.keys():
+            if len(str(label)) > len(str(label_dict[node_num])):
+                label_dict[node_num] = label
+        else:
+            label_dict[node_num] = label
+
+    for annotator in annotators:
+        html_file = "{0}_{1}_blob_network.html".format(base_name, annotator)
+        html_network(annotations, html_file, annotator_filter=annotator, label_dict=label_dict)
+
+
 base_names = ["android100", "ban100", "ipad100", "layoffs100", "twitter100"]
 annotators = ['A1', 'A2', 'A3', 'A4', 'A5']
 data_path = 'Data/expert_annotated/'
-
-clean_text = clean_text_input(base_names[0])
-
-annotation_file = data_path + base_names[0]+".ea.txt"
-
-annotations = pd.read_csv(annotation_file, sep='\t', error_bad_lines=False)
-
-annotations['call_out_range'] = list(zip(annotations['Calling-out Span Start'], annotations['Calling-out Span End']))
-annotations['target_range'] = list(zip(annotations['Target Span Start'], annotations['Target Span End']))
-
-range_dict = blob_range_dict(annotations)
-
-annotations['Target'] = annotations['call_out_range'].map(range_dict)
-annotations['Source'] = annotations['target_range'].map(range_dict)
-annotations['Weight'] = 1
-
-label_dict = {}
-
-for node_num, label in zip(annotations['Target'], annotations['Calling-out Spanned Text']):
-    if node_num in label_dict.keys():
-        if len(str(label)) > len(str(label_dict[node_num])):
-            label_dict[node_num] = label
-    else:
-        label_dict[node_num] = label
-
-for node_num, label in zip(annotations['Source'], annotations['Target Spanned Text']):
-    if node_num in label_dict.keys():
-        if len(str(label)) > len(str(label_dict[node_num])):
-            label_dict[node_num] = label
-    else:
-        label_dict[node_num] = label
-
-for annotator in annotators:
-    html_file = "{0}_blob_network.html".format(annotator)
-    html_network(annotations, html_file, annotator_filter=annotator, label_dict=label_dict)

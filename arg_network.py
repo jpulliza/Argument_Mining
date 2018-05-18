@@ -1,7 +1,7 @@
 from pyvis.network import Network
 import pandas as pd
 import math
-from annotation_tagger import return_annotation_positions, clean_text_input
+from annotation_tagger import clean_text_input
 
 
 def html_network(got_data, html_file, label_dict, show_buttons=True, annotator_filter=False):

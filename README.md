@@ -15,7 +15,7 @@ Given a web document and a set of annotated targets and call-outs, how can we vi
 [ ] Drawing connections between unique Knowtator Target ID and Callout IDs, which [can then be connected using JavaScript and SVG ](https://gist.github.com/alojzije/11127839)
 
 ### Word Stacking
-[x] For each word in a document, inidicate whether that has been marked by the annotator as in a call-out, target, or both.
+[x] For each word in a document, inidicate whether that has been marked by the annotator as in a call-out, target, or both. See arg_words.py for implementation. 
 
 [ ] Add frequency charts for how often each word appears in a category for each annotator
 

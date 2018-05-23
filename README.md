@@ -3,39 +3,34 @@
 Visualizing call-outs and targets the content and comments of web documents as marked by annotators.
 
 ## Summary
-*	Returning a document marked up by an annotator in HTML
-*	Comparing annotations (+/-/=) across annotators
-*	Grouping annotators (lumpers vs. splitters)
-*	Clustering commonalities vs. left overs by ADU type
-*	Change annotation format to another type, like TREC or something else standard
+Given a web document and a set of annotated targets and call-outs, how can we visualize differences between annotators (Micro View) and connections between text (Macro View)?
 
-## Marking HTML
-*	Tags that indicate how many annotators marked that text, making a heat map.
-    *	<1>This is a </1><4>callout</4> <2>for the target.</2>
-*	Annotating by spans of text by unique Knowtator Target ID and Callout IDs.
-    *	[Can then be connected using JavaScript and SVG ](https://gist.github.com/alojzije/11127839)
+## Micro View
 
-## Node Networks
+### Marking HTML
+[x] For every annotator, add a tag indicating spans of call-out and target texts
 
-## Other
+[ ] Tags that indicate how many annotators marked that text, making a heat map
 
-## Technical Issues:
-*	Position of CO are off, and get worse as they move along. According to Shawon this may be due to Mac vs. PC issue where the new line characters were handled differently.
-*	What is the relationship of callouts to targets? A5 had a single call-out for two targets. Is this a one-to-many? I guess it has to assume possibly many-to-many since a target can be called out by multiple call outs, and a call out can be used for multiple targets.
+[ ] Drawing connections between unique Knowtator Target ID and Callout IDs, which [can then be connected using JavaScript and SVG ](https://gist.github.com/alojzije/11127839)
 
-## Assumptions
+### Word Stacking
+[x] For each word in a document, inidicate whether that has been marked by the annotator as in a call-out, target, or both.
+
+[ ] Add frequency charts for how often each word appears in a category for each annotator
+
+[ ] Move to HTML
+
+## Macro View
+
+### Node Networks
+[x] Crete a network of call-outs and targets, where a span of text is a node.
+    *   For text spans, created the options of exact spans of text or spans of text with any overlap.
+[ ] Color code nodes and relationships based on annotators
+[ ] Output network statistics on the network formed
+
+## Assumptions and Technical Issues
 *	No annotator creates overlapping targets or callouts.
 *	Finding multiples of the same annotation in the text is thrown out.
 *	Special characters and other errors
-
-## Next steps:
-*	comparing annotators (A to B, A to B to C)
-*	walking through a chain of callouts and targets
-*	comparing chains/trees between annotators
-*	comparing chains/trees between commenters
-
-## Future Work:
-*	Transplant the same process on a new set of unseen articles
-*	Reformatting the annotations into a different format, or maybe different tagging, such as output as formalized xml, output the core annotation as well as the overlap/difference between annotators
-*	You can test how the system automatically adjusts to adding more annotations from different people to define cores, targets, and etc. being able to add annotations into a dump and have it aggregate automatically is a value add to a researcher.
-
+*	Position of CO are off, and get worse as they move along. This may be due to Mac vs. PC issue where the new line characters were handled differently.

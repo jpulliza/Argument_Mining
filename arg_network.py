@@ -93,7 +93,7 @@ def exact_range_dict(df):
     return range_dict
 
 
-def export_annotation_network(base_name, data_path):
+def export_annotation_network(base_name, annotators, data_path):
     annotation_file = data_path + base_name+".ea.txt"
 
     annotations = pd.read_csv(annotation_file, sep='\t', error_bad_lines=False)
@@ -124,10 +124,13 @@ def export_annotation_network(base_name, data_path):
             label_dict[node_num] = label
 
     for annotator in annotators:
-        html_file = "{0}_{1}_blob_network.html".format(base_name, annotator)
+        html_file = "Output\\Network\{0}_{1}_blob_network.html".format(base_name, annotator)
         html_network(annotations, html_file, annotator_filter=annotator, label_dict=label_dict)
 
 
 base_names = ["android100", "ban100", "ipad100", "layoffs100", "twitter100"]
 annotators = ['A1', 'A2', 'A3', 'A4', 'A5']
 data_path = 'Data/expert_annotated/'
+
+for base_name in base_names:
+    export_annotation_network(base_name, annotators, data_path)

@@ -25,8 +25,11 @@ Given a web document and a set of annotated targets and call-outs, how can we vi
 
 ### Node Networks
 [x] Crete a network of call-outs and targets, where a span of text is a node.
+
     *   For text spans, created the options of exact spans of text or spans of text with any overlap.
+
 [ ] Color code nodes and relationships based on annotators
+
 [ ] Output network statistics on the network formed
 
 ## Assumptions and Technical Issues

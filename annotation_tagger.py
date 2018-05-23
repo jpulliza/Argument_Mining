@@ -82,7 +82,7 @@ def add_annotation_tags(base_name):
 
 def export_tagged_text(base_names):
     for base_name in base_names:
-        output_file = data_path + "/output/" + base_name + '_output_overlap.html'
+        output_file = "Output/Tagged_HTML/" + base_name + '_output_overlap.html'
         g = codecs.open(output_file, 'w', 'utf-8')
 
         tagged_text = add_annotation_tags(base_name)
@@ -90,3 +90,5 @@ def export_tagged_text(base_names):
         g.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="styles.css"></head><body>'
                 + tagged_text + '</body></html>')
 
+
+export_tagged_text(base_names)
